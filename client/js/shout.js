@@ -338,11 +338,16 @@ $(function() {
 		part: true,
 		thumbnails: true,
 		quit: true,
+		theme_select: "example",
 	}, $.cookie("settings"));
 
 	for (var i in options) {
-		if (options[i]) {
-			settings.find("input[name=" + i + "]").prop("checked", true);
+		if (typeof options[i] == "boolean") {
+			if(options[i]) {
+				settings.find("input[name=" + i + "]").prop("checked", true);
+			}
+		} else {
+			settings.find("select[id=" + i + "]").prop("selectedIndex", options[i]);
 		}
 	}
 
@@ -369,6 +374,23 @@ $(function() {
 		if (name == "colors") {
 			chat.toggleClass("no-colors", !self.prop("checked"));
 		}
+	}).find("input")
+		.trigger("change");
+
+	settings.on("change", "select", function() {
+		var self = $(this);
+		var name = self.attr("id");
+		if(name == "theme_select") {
+				var mySelect = document.getElementById("theme_select");
+				options[name] = mySelect.options[mySelect.selectedIndex].value;
+				document.getElementById("theme").setAttribute("href", "themes/" + options[name] + ".css");
+		}
+		$.cookie(
+			"settings",
+			options, {
+				expires: expire(365)
+			}
+		);
 	}).find("input")
 		.trigger("change");
 
